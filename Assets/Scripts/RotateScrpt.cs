@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class RotateScrpt : MonoBehaviour {
@@ -36,5 +38,15 @@ public class RotateScrpt : MonoBehaviour {
             transform.eulerAngles = new Vector3(original.x - y, original.y - x, original.z);
         }
 
+    }   
+
+    private void OnMouseUp()
+    {
+        if (isEnabled)
+        {
+            string t = Manager.instance.loggedin_user + " - " + Manager.instance.currentObject.name + " - Rotate transform to " + transform.eulerAngles;
+            string p = Manager.instance.path;
+            File.AppendAllText(@p, t + Environment.NewLine);
+        }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class ScaleScript : MonoBehaviour {
@@ -32,5 +34,15 @@ public class ScaleScript : MonoBehaviour {
             transform.localScale = new Vector3(original.x + f, original.y + f, original.z + f);
         }
 
+    }
+
+    private void OnMouseUp()
+    {
+        if (isEnabled)
+        {
+            string t = Manager.instance.loggedin_user + " - " + Manager.instance.currentObject.name + " - Scale transform to " + transform.localScale;
+            string p = Manager.instance.path;
+            File.AppendAllText(@p, t + Environment.NewLine);
+        }
     }
 }

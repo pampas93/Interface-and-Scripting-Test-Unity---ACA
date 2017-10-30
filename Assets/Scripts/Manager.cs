@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,21 +23,29 @@ public class Manager : MonoBehaviour {
     [SerializeField]
     GameObject sphere;
 
-    private GameObject currentObject = null;
+    public string logFilename = "userLog.txt";
+
+    [HideInInspector]
+    public string path;
+
+    [HideInInspector]
+    public GameObject currentObject = null;
+
+    [HideInInspector]
+    public string loggedin_user;
     //Shader selected_Shader;
 
     bool userLoggedIn = false;
 
     public static Manager instance;
 
-    private Transform previousTransform;
-
-    //private GameObject selectedObject = null;
     private GameObject previous_selectedObject = null;
 
     enum transformMode { Move, Scale, Rotate, Reset, None};
 
     transformMode currentMode = transformMode.None;
+
+    private Dictionary<string, string> user_credentials = new Dictionary<string, string>();
 
     private void Awake()
     {
@@ -49,6 +58,11 @@ public class Manager : MonoBehaviour {
         {
             if (GUI.Button(new Rect(20, 20, 70, 35), "Cube"))
             {
+                if(currentObject != null)
+                {
+                    disableAll(currentObject);
+                }
+
                 Debug.Log("Show a cube");
                 cube.SetActive(true);
                 sphere.SetActive(false);
@@ -61,6 +75,11 @@ public class Manager : MonoBehaviour {
 
             if (GUI.Button(new Rect(20, 70, 70, 35), "Sphere"))
             {
+
+                if (currentObject != null)
+                {
+                    disableAll(currentObject);
+                }
                 Debug.Log("Show a sphere");
                 cube.SetActive(false);
                 sphere.SetActive(true);
@@ -110,12 +129,26 @@ public class Manager : MonoBehaviour {
         }
     }
 
+    void disableAll(GameObject obj)
+    {
+        obj.GetComponent<MoveScript>().isEnabled = false;
+        obj.GetComponent<RotateScrpt>().isEnabled = false;
+        obj.GetComponent<ScaleScript>().isEnabled = false;
+    }
+
     // Use this for initialization
     void Start () {
         //cube.SetActive(false);
         sphere.SetActive(false);
 
-        //selected_Shader = Shader.Find("Self-Illumin/Diffuse");
+        user_credentials.Add("aaa", "123");
+        user_credentials.Add("bbb", "123");
+        user_credentials.Add("ccc", "123");
+
+        path = "Assets/Resources/" + logFilename;
+        //File.WriteAllText(@path, createText);
+
+        //selected_Shader = Shader.Find("Self -Illumin/Diffuse");
 
     }
 
@@ -166,14 +199,26 @@ public class Manager : MonoBehaviour {
             case transformMode.Move:
                 var temp_script = currentObject.GetComponent<MoveScript>();
                 currentObject.transform.localPosition = temp_script.previous_position;
+
+                string m = loggedin_user + " - " + currentObject.name + " - Reset Move transform to " + currentObject.transform.localPosition;
+                File.AppendAllText(@path, m + Environment.NewLine);
+
                 break;
             case transformMode.Rotate:
                 var temp_script1 = currentObject.GetComponent<RotateScrpt>();
                 currentObject.transform.localRotation = temp_script1.previous_rotate;
+
+                string r = loggedin_user + " - " + currentObject.name + " - Reset Rotate transform to " + currentObject.transform.eulerAngles;
+                File.AppendAllText(@path, r + Environment.NewLine);
+
                 break;
             case transformMode.Scale:
-                var temp_script2 = currentObject.GetComponent<RotateScrpt>();
-                currentObject.transform.localRotation = temp_script2.previous_rotate;
+                var temp_script2 = currentObject.GetComponent<ScaleScript>();
+                currentObject.transform.localScale = temp_script2.previous_Scale;
+
+                string s = loggedin_user + " - " + currentObject.name + " - Reset Scale transform to " + currentObject.transform.localScale;
+                File.AppendAllText(@path, s + Environment.NewLine);
+
                 break;
         }
     }
@@ -228,14 +273,19 @@ public class Manager : MonoBehaviour {
         string user = username.text;
         string pass = password.text;
 
-        if(user == "" && pass == "")
+        foreach(var u in user_credentials)
         {
-            LoginCanvas.enabled = false;
-            userLoggedIn = true;
+            if(u.Key == user && u.Value == pass)
+            {
+                LoginCanvas.enabled = false;
+                userLoggedIn = true;
+
+                loggedin_user = user;
+                return;
+            }
         }
-        else
-        {
-            errorLogin.text = "Wrong Credentials";
-        }
+        
+        errorLogin.text = "Wrong Credentials";
+        
     }
 }

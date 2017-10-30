@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
- 
- [RequireComponent(typeof(MeshCollider))]
+using System.IO;
+using System;
+
+[RequireComponent(typeof(MeshCollider))]
 
 public class MoveScript : MonoBehaviour
 {
@@ -32,6 +34,16 @@ public class MoveScript : MonoBehaviour
             transform.position = curPosition;
         }
 
+    }
+
+    private void OnMouseUp()
+    {
+        if (isEnabled)
+        {
+            string t = Manager.instance.loggedin_user + " - " + Manager.instance.currentObject.name + " - Move transform to " + transform.localPosition;
+            string p = Manager.instance.path;
+            File.AppendAllText(@p, t + Environment.NewLine);
+        }
     }
 
 }
