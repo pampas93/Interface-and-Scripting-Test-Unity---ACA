@@ -9,6 +9,9 @@ public class MoveScript : MonoBehaviour
     private Vector3 screenPoint;
     private Vector3 offset;
 
+    [HideInInspector]
+    public Vector3 previous_position;
+
     public bool isEnabled = false;
 
     void OnMouseDown()
@@ -16,7 +19,7 @@ public class MoveScript : MonoBehaviour
         screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
 
         offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
-
+        previous_position = transform.localPosition;
     }
 
     void OnMouseDrag()

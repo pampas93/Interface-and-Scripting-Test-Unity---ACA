@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,8 @@ public class Manager : MonoBehaviour {
     bool userLoggedIn = false;
 
     public static Manager instance;
+
+    private Transform previousTransform;
 
     //private GameObject selectedObject = null;
     private GameObject previous_selectedObject = null;
@@ -68,25 +71,29 @@ public class Manager : MonoBehaviour {
                 currentMode = transformMode.None;
             }
 
-            if (GUI.Button(new Rect(800, 20, 85, 35), "Move"))
+            if (currentObject != null)
             {
-                currentMode = transformMode.Move;
-                ChangeTranformMode();
-            }
-            if (GUI.Button(new Rect(800, 70, 85, 35), "Rotate"))
-            {
-                currentMode = transformMode.Rotate;
-                ChangeTranformMode();
-            }
-            if (GUI.Button(new Rect(800, 120, 85, 35), "Scale"))
-            {
-                currentMode = transformMode.Scale;
-                ChangeTranformMode();
-            }
-            if (GUI.Button(new Rect(800, 170, 85, 35), "Reset Back"))
-            {
-                currentMode = transformMode.Reset;
-                ChangeTranformMode();
+                if (GUI.Button(new Rect(800, 20, 85, 35), "Move"))
+                {
+                    currentMode = transformMode.Move;
+                    ChangeTranformMode();
+                }
+                if (GUI.Button(new Rect(800, 70, 85, 35), "Rotate"))
+                {
+                    currentMode = transformMode.Rotate;
+                    ChangeTranformMode();
+                }
+                if (GUI.Button(new Rect(800, 120, 85, 35), "Scale"))
+                {
+                    currentMode = transformMode.Scale;
+                    ChangeTranformMode();
+                }
+                if (GUI.Button(new Rect(800, 170, 85, 35), "Reset Back"))
+                {
+                    ResetTransform(currentMode);
+                    //currentMode = transformMode.Reset;
+                    //ChangeTranformMode();
+                }
             }
 
            
@@ -111,11 +118,6 @@ public class Manager : MonoBehaviour {
         //selected_Shader = Shader.Find("Self-Illumin/Diffuse");
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     void ChangeTranformMode()
     {
@@ -140,13 +142,40 @@ public class Manager : MonoBehaviour {
                 rotateScript.isEnabled = false;
                 scaleScript.isEnabled = true;
                 break;
-            case transformMode.Reset:
+            //case transformMode.Reset:
+
+            //    moveScript.isEnabled = false;
+            //    rotateScript.isEnabled = false;
+            //    scaleScript.isEnabled = false;
+
+            //    currentMode = transformMode.None;
+            //    break;
+            default:
                 moveScript.isEnabled = false;
                 rotateScript.isEnabled = false;
                 scaleScript.isEnabled = false;
                 break;
         }
        
+    }
+
+    private void ResetTransform(transformMode x)
+    {
+        switch (currentMode)
+        {
+            case transformMode.Move:
+                var temp_script = currentObject.GetComponent<MoveScript>();
+                currentObject.transform.localPosition = temp_script.previous_position;
+                break;
+            case transformMode.Rotate:
+                var temp_script1 = currentObject.GetComponent<RotateScrpt>();
+                currentObject.transform.localRotation = temp_script1.previous_rotate;
+                break;
+            case transformMode.Scale:
+                var temp_script2 = currentObject.GetComponent<RotateScrpt>();
+                currentObject.transform.localRotation = temp_script2.previous_rotate;
+                break;
+        }
     }
 
     void FixedUpdate()
@@ -180,6 +209,17 @@ public class Manager : MonoBehaviour {
                
             }
         }
+
+        //if(Input.GetMouseButtonUp(0) && currentMode != transformMode.None)
+        //{
+        //    if(currentObject != null)
+        //    {
+        //        previousTransform.localScale = currentObject.transform.localScale;
+        //        previousTransform.localPosition = currentObject.transform.localPosition;
+        //        previousTransform.localRotation = currentObject.transform.localRotation;
+        //    }
+        //    //
+        //}
 
     }
 

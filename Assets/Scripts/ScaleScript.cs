@@ -7,12 +7,15 @@ public class ScaleScript : MonoBehaviour {
     public float scaleFactor = 5.0f;
     private Vector3 offset;
 
+    [HideInInspector]
+    public Vector3 previous_Scale;
+
     public bool isEnabled = false;
 
     void OnMouseDown()
     {
         offset = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-        
+        previous_Scale = transform.localScale;
     }
 
     void OnMouseDrag()
